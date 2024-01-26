@@ -61,4 +61,16 @@ public class UserService {
         return userDAO.findByEmail(email).orElseThrow(() -> new NotFoundException("User with email " + email + " not found!"));
 
     }
+
+    public User setAdmin(long id) {
+        User user = userDAO.findById(id).orElseThrow(() -> new NotFoundException(id));
+        user.setRole(Role.ADMIN);
+        return userDAO.save(user);
+    }
+
+    public User setUser(long id) {
+        User user = userDAO.findById(id).orElseThrow(() -> new NotFoundException(id));
+        user.setRole(Role.USER);
+        return userDAO.save(user);
+    }
 }

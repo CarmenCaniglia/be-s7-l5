@@ -1,12 +1,13 @@
 package carmencaniglia.bes7l5.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalTime;
-import java.util.Date;
+
 
 @RestControllerAdvice
 public class ExceptionsHandler {
@@ -20,6 +21,12 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorsPayload handleUnauthorized(UnauthorizedException e) {
         return new ErrorsPayload(e.getMessage(), LocalTime.now());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // 403
+    public ErrorsPayload handleAccessDenied(AccessDeniedException ex) {
+        return new ErrorsPayload("Your role does not allow access to this functionality!!", LocalTime.now());
     }
 
     @ExceptionHandler(NotFoundException.class)//404
