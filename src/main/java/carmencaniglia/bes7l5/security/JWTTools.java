@@ -1,6 +1,7 @@
 package carmencaniglia.bes7l5.security;
 
 import carmencaniglia.bes7l5.entities.User;
+import carmencaniglia.bes7l5.exceptions.UnauthorizedException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,19 @@ public class JWTTools {
                 .compact();
     }
 
-    public void verifyToken(){
+    public void verifyToken(String token){
+        try {
+            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parse(token);
+        } catch (Exception ex) {
+            throw new UnauthorizedException("Token not valid! Please login again");
+        }
+    }
 
+    public String extractIdFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .build()
+                .parseSignedClaims(token).getPayload().getSubject();
     }
 }
+
