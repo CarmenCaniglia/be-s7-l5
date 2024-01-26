@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -23,4 +24,6 @@ public class Event {
     private String picture;
     private int maxPartecipants;
 
+    @ManyToMany(mappedBy = "events")
+    private List<User> users;
 }
