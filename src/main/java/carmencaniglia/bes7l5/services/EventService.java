@@ -1,34 +1,36 @@
 package carmencaniglia.bes7l5.services;
 
 import carmencaniglia.bes7l5.entities.Event;
-import carmencaniglia.bes7l5.entities.User;
 import carmencaniglia.bes7l5.exceptions.NotFoundException;
+import carmencaniglia.bes7l5.payload.events.EventDTO;
 import carmencaniglia.bes7l5.repositories.EventDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+@Service
 public class EventService {
     @Autowired
     private EventDAO eventDAO;
 
-    public Event save(Event body) {
+    public Event save(EventDTO body) {
         Event event = new Event();
-        event.setTitle(body.getTitle());
-        event.setDescription(body.getDescription());
-        String dateStr = body.getDate().toString();
+        event.setTitle(body.title());
+        event.setDescription(body.description());
+        String dateStr = body.date().toString();
         try {
             event.setDate(LocalDate.parse(dateStr));
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Use yyyy-MM-dd");
         }
-        event.setLocation(body.getLocation());
-        event.setMaxPartecipants(body.getMaxPartecipants());
+        event.setLocation(body.location());
+        event.setMaxPartecipants(body.maxParticipants());
         return eventDAO.save(event);
     }
 
