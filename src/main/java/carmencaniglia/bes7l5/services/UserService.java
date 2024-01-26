@@ -1,5 +1,6 @@
 package carmencaniglia.bes7l5.services;
 
+import carmencaniglia.bes7l5.entities.Role;
 import carmencaniglia.bes7l5.entities.User;
 import carmencaniglia.bes7l5.exceptions.BadRequestException;
 import carmencaniglia.bes7l5.exceptions.NotFoundException;
@@ -38,6 +39,7 @@ public class UserService {
         newUser.setName(body.name());
         newUser.setEmail(body.email());
         newUser.setPassword(body.password());
+        newUser.setRole(Role.USER);
         return userDAO.save(newUser);
     }
 

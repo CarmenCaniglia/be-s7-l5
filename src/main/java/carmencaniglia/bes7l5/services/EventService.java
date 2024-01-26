@@ -1,9 +1,12 @@
 package carmencaniglia.bes7l5.services;
 
 import carmencaniglia.bes7l5.entities.Event;
+import carmencaniglia.bes7l5.entities.User;
 import carmencaniglia.bes7l5.exceptions.NotFoundException;
+import carmencaniglia.bes7l5.exceptions.PartecipateException;
 import carmencaniglia.bes7l5.payload.events.EventDTO;
 import carmencaniglia.bes7l5.repositories.EventDAO;
+import carmencaniglia.bes7l5.repositories.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +21,8 @@ import java.time.format.DateTimeParseException;
 public class EventService {
     @Autowired
     private EventDAO eventDAO;
+    @Autowired
+    private UserDAO userDAO;
 
     public Event save(EventDTO body) {
         Event event = new Event();
@@ -57,5 +62,21 @@ public class EventService {
         found.setLocation(body.getLocation());
         found.setMaxPartecipants(body.getMaxPartecipants());
         return eventDAO.save(found);
+    }
+
+    public Event bookEvent(long eventId, long userId) {
+        Event event = eventDAO.findById(eventId).orElseThrow(() -> new NotFoundException(eventId));
+        User user = userDAO.findById(userId).orElseThrow(() -> new NotFoundException(userId));
+
+        if (event.getUsers().contains(user)) {
+            throw new PartecipateException(event, user);
+        } else {
+            if (event.getUsers().size() < event.getMaxPartecipants()) {
+                event.getUsers().add(user);
+                return eventDAO.save(event);
+            } else {
+                throw new PartecipateException("SOLD OUT!");
+            }
+        }
     }
 }
